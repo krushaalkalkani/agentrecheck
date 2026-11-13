@@ -1,7 +1,7 @@
 # Launch kit
 
 Drafts, written to be edited. Everything below describes what v0.1.0 actually does. Before
-posting, replace `<REPO_URL>` and `<SITE_URL>`, and re-read each claim against the current build.
+posting, replace `https://github.com/krushaalkalkani/agentrecheck` and `https://agentrecheck.vercel.app`, and re-read each claim against the current build.
 
 Do not post numbers (users, stars, benchmarks) until you have real ones.
 
@@ -57,8 +57,8 @@ Things I'd like to be upfront about:
 - The SDK and CLI are MIT and work entirely locally. There's an optional dashboard (trace
   timeline, run history, cost/latency trends) that I'd eventually like to charge teams for.
 
-Repo: <REPO_URL>
-Site and docs: <SITE_URL>
+Repo: https://github.com/krushaalkalkani/agentrecheck
+Site and docs: https://agentrecheck.vercel.app
 
 I'd really like feedback on the assertion format, and on what you'd need before trusting this in
 a real pipeline. What does your agent testing look like today?
@@ -110,8 +110,8 @@ Python, MIT licensed, works with the OpenAI and Anthropic SDKs.
 The example agent runs offline, so you can watch it catch a regression in about a minute, no API
 key needed.
 
-Repo: <REPO_URL>
-Docs: <SITE_URL>/docs
+Repo: https://github.com/krushaalkalkani/agentrecheck
+Docs: https://agentrecheck.vercel.app/docs
 
 It's early. Tell me what's missing.
 
