@@ -1,7 +1,7 @@
 # Launch kit
 
 Drafts, written to be edited. Everything below describes what v0.1.0 actually does. Before
-posting, replace `https://github.com/krushaalkalkani/agentrecheck` and `https://agentrecheck.vercel.app`, and re-read each claim against the current build.
+posting, re-read each claim against the current build.
 
 Do not post numbers (users, stars, benchmarks) until you have real ones.
 
