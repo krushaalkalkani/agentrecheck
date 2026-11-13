@@ -11,15 +11,15 @@ pip install agentrecheck
 from openai import OpenAI
 from agentrecheck import trace, tool, wrap_openai
 
-client = wrap_openai(OpenAI())     # records every LLM call
+client = wrap_openai(OpenAI())  # records every LLM call
 
-@tool                              # records every tool call
-def lookup_order(order_id: str) -> dict:
-    ...
 
-@trace                             # records the whole run
-def run_agent(message: str) -> str:
-    ...
+@tool  # records every tool call
+def lookup_order(order_id: str) -> dict: ...
+
+
+@trace  # records the whole run
+def run_agent(message: str) -> str: ...
 ```
 
 ```bash
