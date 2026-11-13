@@ -1,36 +1,52 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AgentRecheck web
 
-## Getting Started
+Landing page (`/`), docs (`/docs`), dashboard (`/dashboard`), and the REST API (`/api/*`).
 
-First, run the development server:
+Next.js App Router, Tailwind, shadcn/ui, Drizzle, Recharts, Supabase Auth.
+
+## Run locally
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+With no environment variables the app runs in **local demo mode**:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Postgres runs in-process (PGlite) and is stored in `.data/`.
+- A demo project with sample traces and runs is seeded. Its API key is printed in the server log.
+- Sign-in accepts any email and sends nothing.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Delete `.data/` to reset. Set `AGENTRECHECK_SEED=0` to start empty.
 
-## Learn More
+## Run against Supabase
 
-To learn more about Next.js, take a look at the following resources:
+Copy `.env.example` to `.env.local`, fill in the three Supabase values, then:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+DATABASE_URL=... npm run db:init    # creates the tables (idempotent)
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Scripts
 
-## Deploy on Vercel
+| Script | |
+| --- | --- |
+| `npm run dev` / `build` / `start` | Next.js |
+| `npm run lint` | ESLint |
+| `npm run typecheck` | Route type generation + `tsc --noEmit` |
+| `npm test` | API route tests (Vitest, in-memory database) |
+| `npm run db:init` | Apply the schema to `DATABASE_URL` |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Layout
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Path | |
+| --- | --- |
+| `src/app/api/` | Route handlers |
+| `src/app/dashboard/` | Authenticated pages |
+| `src/lib/db/` | Drizzle schema, DDL, connection (Postgres or PGlite) |
+| `src/lib/data.ts` | All queries and plan limits |
+| `src/lib/auth.ts` | Session and API-key resolution |
+| `src/lib/seed.ts` | Demo data for local mode |
+| `src/proxy.ts` | Supabase session refresh |
+| `tests/api.test.ts` | API tests |
