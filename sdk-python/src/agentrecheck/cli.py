@@ -160,7 +160,7 @@ def run(
     if client is not None:
         try:
             response = client.upload_run(result)
-            console.print(f"Uploaded run → {response.get('url', client.api_url)}")
+            console.print(f"Uploaded run → {response.get('url', client.api_url)}", soft_wrap=True)
         except CloudError as exc:
             err.print(f"[yellow]warning:[/yellow] upload failed: {exc}")
 
