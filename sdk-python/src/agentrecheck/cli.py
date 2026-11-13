@@ -8,6 +8,7 @@ from pathlib import Path
 
 import typer
 from rich.console import Console
+from rich.markup import escape
 from rich.table import Table
 
 from . import __version__, storage
@@ -28,7 +29,7 @@ err = Console(stderr=True)
 
 
 def _die(message: str, code: int = 2) -> typer.Exit:
-    err.print(f"[red]error:[/red] {message}")
+    err.print(f"[red]error:[/red] {escape(message)}")
     return typer.Exit(code)
 
 

@@ -248,3 +248,24 @@ def test_storage_load_trace_variants():
         storage.load_trace("tr_aa")
     with pytest.raises(storage.NotFoundError, match="No trace"):
         storage.load_trace("zzz")
+
+
+def test_judge_missing_sdk_skips_unless_explicit(monkeypatch):
+    import builtins
+
+    real_import = builtins.__import__
+
+    def no_sdk(name, *args, **kwargs):
+        if name in ("openai", "anthropic"):
+            raise ImportError(name)
+        return real_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", no_sdk)
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "x")
+    assert judge_from_env() is None
+    with pytest.raises(JudgeError, match="agentrecheck\\[anthropic\\]"):
+        judge_from_env("anthropic:claude-opus-5-5")
+    monkeypatch.setenv("OPENAI_API_KEY", "x")
+    assert judge_from_env() is None
+    with pytest.raises(JudgeError, match="agentrecheck\\[openai\\]"):
+        judge_from_env("openai:gpt-4o-mini")

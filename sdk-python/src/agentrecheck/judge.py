@@ -115,6 +115,7 @@ def judge_from_env(spec: str | None = None) -> Judge | None:
     Returns None when no key is available, in which case judge checks are skipped.
     """
     spec = spec or os.environ.get("AGENTRECHECK_JUDGE_MODEL")
+    explicit = bool(spec)
     if spec:
         provider, _, model = spec.partition(":")
     elif os.environ.get("OPENAI_API_KEY"):
@@ -124,14 +125,19 @@ def judge_from_env(spec: str | None = None) -> Judge | None:
     else:
         return None
 
-    if provider == "openai":
-        if not os.environ.get("OPENAI_API_KEY"):
-            return None
-        return OpenAIJudge(model or DEFAULT_MODELS["openai"])
-    if provider == "anthropic":
-        if not os.environ.get("ANTHROPIC_API_KEY"):
-            return None
-        return AnthropicJudge(model or DEFAULT_MODELS["anthropic"])
-    raise JudgeError(
-        f"Unknown judge provider '{provider}'. Use 'openai:<model>' or 'anthropic:<model>'."
-    )
+    if provider not in DEFAULT_MODELS:
+        raise JudgeError(
+            f"Unknown judge provider '{provider}'. Use 'openai:<model>' or 'anthropic:<model>'."
+        )
+    key_var = "OPENAI_API_KEY" if provider == "openai" else "ANTHROPIC_API_KEY"
+    if not os.environ.get(key_var):
+        return None
+    judge_cls = OpenAIJudge if provider == "openai" else AnthropicJudge
+    try:
+        return judge_cls(model or DEFAULT_MODELS[provider])
+    except JudgeError:
+        # A key happens to be in the environment but the provider SDK is not
+        # installed. Only treat that as an error when a judge was asked for.
+        if explicit:
+            raise
+        return None

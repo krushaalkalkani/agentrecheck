@@ -1,0 +1,32 @@
+# Two intents in one message: refund, then answer the processing-time question.
+id: refund_with_question
+name: Refund plus a follow-up question
+trace_id: tr_f80b9deed641
+input:
+  args:
+  - I want a refund for order A1001, it arrived damaged. Also, how long do refunds take?
+  kwargs: {}
+baseline:
+  tool_sequence:
+  - lookup_order
+  - issue_refund
+  - search_kb
+  cost_usd: 0.0002997
+  latency_ms: 96.0
+  steps: 7
+  output: Your refund of $49.00 for order A1001 has been issued (reference R-A1001). Refunds are returned
+    to the original payment method within 5-7 business days.
+assertions:
+  tools:
+    sequence:
+    - issue_refund
+    - search_kb
+    mode: subset
+  output:
+    contains:
+    - has been issued
+    - 5-7 business days
+  budgets:
+    max_steps: 10
+    max_cost_usd: 0.002
+    max_latency_ms: 30000

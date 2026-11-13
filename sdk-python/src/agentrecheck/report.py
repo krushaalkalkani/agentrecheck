@@ -52,32 +52,39 @@ def _tools_cell(result: CaseResult) -> str:
     return "changed"
 
 
+def _with_pct(text: str, actual: float, baseline: float | None) -> str:
+    """Append a compact percentage delta: '$0.00012 (+18%)'."""
+    if baseline is None or baseline <= 0:
+        return text
+    return f"{text} ({(actual - baseline) / baseline * 100:+.0f}%)"
+
+
 def render_run(run: RunResult, console: Console | None = None) -> None:
     console = console or Console()
     table = Table(title=f"AgentRecheck run {run.id}", title_justify="left", expand=False)
-    table.add_column("Case", style="bold")
-    table.add_column("Result")
-    table.add_column("Tools")
-    table.add_column("Cost", justify="right")
-    table.add_column("Cost Δ", justify="right")
-    table.add_column("Latency", justify="right")
-    table.add_column("Latency Δ", justify="right")
-    table.add_column("Judge", justify="right")
+    table.add_column("Case", style="bold", no_wrap=True)
+    table.add_column("Result", no_wrap=True)
+    table.add_column("Tools", no_wrap=True)
+    table.add_column("Cost (vs base)", justify="right", no_wrap=True)
+    table.add_column("Latency (vs base)", justify="right", no_wrap=True)
+    judged = any(r.diff.judge_score is not None for r in run.results)
+    if judged:
+        table.add_column("Judge", justify="right")
 
     for r in run.results:
         d = r.diff
         style = STATUS_STYLE[r.status]
         tools = _tools_cell(r)
-        table.add_row(
+        row = [
             r.case_id,
             f"[{style}]{STATUS_LABEL[r.status]}[/{style}]",
             f"[yellow]{tools}[/yellow]" if tools == "changed" else tools,
-            fmt_cost(d.cost_usd),
-            fmt_delta(d.cost_usd, d.baseline_cost_usd, "cost"),
-            fmt_ms(d.latency_ms),
-            fmt_delta(d.latency_ms, d.baseline_latency_ms, "latency"),
-            f"{d.judge_score:.2f}" if d.judge_score is not None else "-",
-        )
+            _with_pct(fmt_cost(d.cost_usd), d.cost_usd, d.baseline_cost_usd),
+            _with_pct(fmt_ms(d.latency_ms), d.latency_ms, d.baseline_latency_ms),
+        ]
+        if judged:
+            row.append(f"{d.judge_score:.2f}" if d.judge_score is not None else "-")
+        table.add_row(*row)
     console.print(table)
 
     for r in run.results:

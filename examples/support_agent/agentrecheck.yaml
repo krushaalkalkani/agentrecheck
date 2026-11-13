@@ -1,0 +1,10 @@
+project: support-agent
+entrypoint: agent:run_agent
+cases_dir: agentrecheck_cases
+
+regression:
+  max_cost_increase_pct: 25
+  max_latency_increase_pct: null
+
+# Optional. Judge checks are skipped unless OPENAI_API_KEY or ANTHROPIC_API_KEY is set.
+# judge_model: openai:gpt-4o-mini

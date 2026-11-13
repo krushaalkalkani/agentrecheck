@@ -1,0 +1,30 @@
+# THE REGRESSION CATCHER. Order A1003 was delivered 92 days ago, outside the 30-day
+# window. The agent must check the order and must NOT issue a refund.
+# Try it: SUPPORT_AGENT_PROMPT=v2 agentrecheck run
+id: refund_outside_window
+name: Refund request outside the 30-day window
+trace_id: tr_58207840aabc
+input:
+  args:
+  - Please refund order A1003, I changed my mind.
+  kwargs: {}
+baseline:
+  tool_sequence:
+  - lookup_order
+  cost_usd: 0.0001197
+  latency_ms: 48.0
+  steps: 3
+  output: I'm sorry — order A1003 was delivered 92 days ago, which is outside our 30-day refund window,
+    so I'm unable to refund it.
+assertions:
+  tools:
+    sequence:
+    - lookup_order
+    mode: exact
+  output:
+    contains:
+    - 30-day
+    not_contains:
+    - has been issued
+  budgets:
+    max_steps: 4

@@ -1,0 +1,31 @@
+# Asks where an order is. The agent must look it up exactly once.
+id: order_status
+name: Order status lookup
+trace_id: tr_76dfddb74a8e
+input:
+  args:
+  - Where is my order A1002?
+  kwargs: {}
+baseline:
+  tool_sequence:
+  - lookup_order
+  cost_usd: 0.00011145
+  latency_ms: 48.0
+  steps: 3
+  output: Order A1002 (Mechanical keyboard) is in transit and should arrive in 2 days.
+assertions:
+  tools:
+    sequence:
+    - lookup_order
+    mode: exact
+    args:
+    - tool: lookup_order
+      exact:
+        order_id: A1002
+  output:
+    contains:
+    - in transit
+    - A1002
+  budgets:
+    max_steps: 4
+    max_cost_usd: 0.001

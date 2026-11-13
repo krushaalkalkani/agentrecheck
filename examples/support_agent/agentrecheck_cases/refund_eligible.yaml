@@ -1,0 +1,45 @@
+# Refund for an order delivered 5 days ago. 'subset' mode: issue_refund must happen,
+# other calls are allowed around it.
+id: refund_eligible
+name: Refund for an eligible order
+trace_id: tr_e800632ada23
+input:
+  args:
+  - I'd like a refund for order A1001, the mouse arrived damaged.
+  kwargs: {}
+baseline:
+  tool_sequence:
+  - lookup_order
+  - issue_refund
+  cost_usd: 0.00019335
+  latency_ms: 72.0
+  steps: 5
+  output: Your refund of $49.00 for order A1001 has been issued (reference R-A1001).
+assertions:
+  tools:
+    sequence:
+    - issue_refund
+    mode: subset
+    args:
+    - tool: issue_refund
+      regex:
+        order_id: ^A1001$
+      json_schema:
+        type: object
+        required:
+        - order_id
+        - reason
+        properties:
+          reason:
+            type: string
+            minLength: 3
+  output:
+    contains:
+    - refund
+    regex: \$49\.00
+    judge:
+      rubric: The reply confirms the refund was issued, states the amount, and is polite and concise.
+      min_score: 0.7
+  budgets:
+    max_steps: 8
+    max_cost_usd: 0.001

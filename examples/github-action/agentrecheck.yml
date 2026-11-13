@@ -1,0 +1,43 @@
+# Copy this file to .github/workflows/agentrecheck.yml in your repository.
+#
+# It replays every AgentRecheck test case on each pull request and fails the
+# check when the agent regressed. A pass/fail table with diffs is written to
+# the job summary.
+name: AgentRecheck
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  agent-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install agentrecheck
+          pip install -r requirements.txt
+
+      - name: Run agent regression tests
+        # Exits non-zero when any case regresses, which fails the job.
+        run: agentrecheck run --json-out agentrecheck-result.json
+        env:
+          # Your agent's own model key.
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          # Optional: upload runs to the dashboard. Both must be set.
+          AGENTRECHECK_API_KEY: ${{ secrets.AGENTRECHECK_API_KEY }}
+          AGENTRECHECK_API_URL: ${{ vars.AGENTRECHECK_API_URL }}
+
+      - name: Upload result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agentrecheck-result
+          path: agentrecheck-result.json
