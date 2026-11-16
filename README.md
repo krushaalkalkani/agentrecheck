@@ -33,6 +33,7 @@ $ agentrecheck run
 | [`sdk-python/`](sdk-python) | The `agentrecheck` Python SDK and CLI (MIT) |
 | [`web/`](web) | Landing page, docs, and dashboard (Next.js, Postgres, Supabase Auth) |
 | [`examples/support_agent/`](examples/support_agent) | An OpenAI tool-calling agent with 5 test cases; runs offline |
+| [`examples/mcp_agent/`](examples/mcp_agent) | The same agent with its tools behind an MCP server; 4 test cases; runs offline |
 | [`examples/github-action/`](examples/github-action) | Ready-to-copy GitHub Actions workflow |
 | [`docs/`](docs) | Reference docs |
 
@@ -63,7 +64,8 @@ def run_agent(message: str) -> str:
     ...                            # your existing agent loop, unchanged
 ```
 
-Anthropic works the same way with `wrap_anthropic(Anthropic())`. For anything else, call
+Anthropic works the same way with `wrap_anthropic(Anthropic())`. Tools behind an **MCP server**
+are recorded with `wrap_mcp(mcp_client)` (see [MCP](#mcp)). For anything else, call
 `record_llm_call(...)` and `record_tool_call(...)` yourself.
 
 **3. Record a run and snapshot it into a test**
@@ -115,6 +117,29 @@ agentrecheck run                            # 5/5 pass
 SUPPORT_AGENT_PROMPT=v2 agentrecheck run    # a "simplified" prompt; 1 regression caught, exit 1
 ```
 
+## MCP
+
+AgentRecheck speaks the [Model Context Protocol](https://modelcontextprotocol.io) both ways.
+
+**Test agents whose tools live in MCP servers.** Wrap the client and every `call_tool` is recorded:
+
+```python
+async with Client(server_params) as mcp:
+    wrap_mcp(mcp)
+    await mcp.call_tool("lookup_order", {"order_id": "A1002"})   # recorded as a tool step
+```
+
+**Let your coding agent run your tests.** `agentrecheck mcp` is an MCP server. Add it to goose,
+Claude Code, or Cursor, and after the coding agent edits your agent's prompt or tools it can call
+`run_cases` and see exactly which tool calls regressed.
+
+```bash
+pip install "agentrecheck[mcp]"
+claude mcp add agentrecheck -- agentrecheck mcp --project-dir "$PWD"
+```
+
+Details and goose setup: [docs/mcp.md](docs/mcp.md). Example: [`examples/mcp_agent`](examples/mcp_agent).
+
 ## Dashboard (optional)
 
 The SDK and CLI work entirely offline. The dashboard adds a trace explorer with a step timeline,
@@ -143,6 +168,7 @@ To run it for real on Vercel and Supabase, see [SUMMARY.md](SUMMARY.md#deploying
 - [Quickstart and concepts](docs/quickstart.md)
 - [Assertions reference](docs/assertions.md)
 - [CLI reference](docs/cli.md)
+- [MCP](docs/mcp.md)
 - [REST API](docs/api.md)
 - The same content is served at `/docs` in the web app.
 
