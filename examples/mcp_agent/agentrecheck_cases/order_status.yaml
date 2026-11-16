@@ -1,0 +1,30 @@
+# The agent must look the order up through the MCP server, with the right order id.
+id: order_status
+name: Order status lookup over MCP
+trace_id: tr_3ae4637b91e2
+input:
+  args:
+  - Where is my order A1002?
+  kwargs: {}
+baseline:
+  tool_sequence:
+  - lookup_order
+  cost_usd: 0.00013485
+  latency_ms: 644.47
+  steps: 3
+  output: Order A1002 (Mechanical keyboard) is in transit and should arrive in 2 days.
+assertions:
+  tools:
+    sequence:
+    - lookup_order
+    mode: exact
+    args:
+    - tool: lookup_order
+      exact:
+        order_id: A1002
+  output:
+    contains:
+    - in transit
+    regex: A1002
+  budgets:
+    max_steps: 4

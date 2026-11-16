@@ -12,6 +12,7 @@ agentrecheck [COMMAND]
 | `snapshot <trace>` | Turn a trace into a test case |
 | `run` | Replay all cases against the current code |
 | `upload <trace>` | Send local traces to the dashboard |
+| `mcp` | Run AgentRecheck as an MCP server over stdio |
 | `version` | Print the installed version |
 
 `<trace>` is a trace id, a unique prefix of one, or `latest`. `upload` also accepts `all`.
@@ -56,3 +57,11 @@ markdown summary is appended to it.
 | `2` | Configuration problem: no entrypoint, no cases, bad arguments |
 
 An upload failure prints a warning and does not change the exit code.
+
+## `mcp`
+
+| Option | Default | |
+| --- | --- | --- |
+| `--project-dir` | current directory | Directory that holds `agentrecheck.yaml` |
+
+Needs `pip install "agentrecheck[mcp]"`. See [MCP](mcp.md) for host setup.

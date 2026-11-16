@@ -187,5 +187,20 @@ def upload_traces(
     console.print(f"Uploaded {len(items)} trace(s) to {client.api_url}")
 
 
+@app.command()
+def mcp(
+    project_dir: Path = typer.Option(
+        Path("."), help="Directory that holds agentrecheck.yaml. Defaults to the current one."
+    ),
+) -> None:
+    """Run AgentRecheck as an MCP server over stdio (for goose, Claude Code, Cursor...)."""
+    from .mcp_server import serve
+
+    try:
+        serve(project_dir)
+    except RuntimeError as exc:
+        raise _die(str(exc)) from exc
+
+
 if __name__ == "__main__":
     app()

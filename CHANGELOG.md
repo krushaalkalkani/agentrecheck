@@ -4,6 +4,19 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- `wrap_mcp(client)`: record every tool call an agent makes through an MCP client (`mcp.Client`
+  or `mcp.ClientSession`, mcp 1.x and 2.x) as a tool step. `wrap()` auto-detects MCP clients.
+- `agentrecheck mcp`: run AgentRecheck as an MCP server over stdio with five tools
+  (`list_cases`, `list_traces`, `show_trace`, `snapshot_trace`, `run_cases`), so coding agents
+  such as goose and Claude Code can replay the suite after editing an agent.
+- `mcp` optional extra: `pip install "agentrecheck[mcp]"`.
+- `examples/mcp_agent`: the support agent with its tools behind an MCP server, four test cases.
+- `AGENTS.md` with build, test, and style instructions for coding agents.
+
 ## [0.1.0] - 2026-11-13
 
 First release.

@@ -2,7 +2,13 @@
 
 __version__ = "0.1.0"
 
-from .adapters import register_adapter, wrap, wrap_anthropic, wrap_openai  # noqa: E402
+from .adapters import (  # noqa: E402
+    register_adapter,
+    wrap,
+    wrap_anthropic,
+    wrap_mcp,
+    wrap_openai,
+)
 from .models import Case, CaseResult, LLMStep, RunResult, ToolStep, Trace  # noqa: E402
 from .pricing import register_price  # noqa: E402
 from .tracer import (  # noqa: E402
@@ -32,5 +38,6 @@ __all__ = [
     "trace",
     "wrap",
     "wrap_anthropic",
+    "wrap_mcp",
     "wrap_openai",
 ]
